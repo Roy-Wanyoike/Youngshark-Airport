@@ -1,0 +1,33 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "airport-frontend": {
+      "root": "Airport-Frontend",
+      "framework": "angular"
+    },
+    "airport": {
+      "root": "Backend_Development-master/Airport",
+      "framework": "angular"
+    },
+    "airport-ssr": {
+      "root": "Backend_Development-master/Airport-ssr",
+      "framework": "angular"
+    },
+    "backend": {
+      "root": "Backend_Development-master/backend",
+      "framework": "express"
+    },
+    "backgroundservice": {
+      "root": "Backend_Development-master/BackgroundService",
+      "framework": "express"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "backend"
+      }
+    }
+  ]
+}
