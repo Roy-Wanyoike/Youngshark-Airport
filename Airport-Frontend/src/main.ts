@@ -6,6 +6,7 @@ import { provideStore } from '@ngrx/store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideEffects } from '@ngrx/effects';
 import { isDevMode } from '@angular/core';
+import { inject } from '@vercel/analytics';
 
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
@@ -27,4 +28,9 @@ bootstrapApplication(AppComponent, {
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
     provideEffects([BookingsEffect]),
   ],
-}).catch((err) => console.error(err));
+})
+  .then(() => {
+    // Initialize Vercel Web Analytics after application bootstrap
+    inject();
+  })
+  .catch((err) => console.error(err));
