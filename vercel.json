@@ -1,69 +1,34 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "services": {
-    "airport-frontend": {
-      "root": "Airport-Frontend",
+    "web": {
+      "root": "apps/web",
       "framework": "angular",
       "buildCommand": "npm run build",
-      "outputDirectory": "dist/airport",
+      "outputDirectory": "dist/airport/browser",
       "installCommand": "npm install",
       "bindings": [
         {
           "type": "service",
-          "service": "backend",
+          "service": "api",
           "format": "url",
           "env": "BACKEND_URL"
         }
       ]
     },
-    "airport": {
-      "root": "Backend_Development-master/Airport",
-      "framework": "angular",
-      "buildCommand": "npm run build",
-      "outputDirectory": "dist/airport",
-      "installCommand": "npm install",
-      "bindings": [
-        {
-          "type": "service",
-          "service": "backend",
-          "format": "url",
-          "env": "BACKEND_URL"
-        }
-      ]
-    },
-    "airport-ssr": {
-      "root": "Backend_Development-master/Airport-ssr",
-      "framework": "angular",
-      "buildCommand": "npm run build:ssr",
-      "outputDirectory": "dist/Airport",
-      "installCommand": "npm install",
-      "bindings": [
-        {
-          "type": "service",
-          "service": "backend",
-          "format": "url",
-          "env": "BACKEND_URL"
-        }
-      ]
-    },
-    "backend": {
-      "root": "Backend_Development-master/backend",
-      "buildCommand": "npm run build:vercel",
-      "outputDirectory": "dist",
-      "installCommand": "npm install"
-    },
-    "backgroundservice": {
-      "root": "Backend_Development-master/BackgroundService",
+    "api": {
+      "root": "apps/api",
       "buildCommand": "npm run build:vercel",
       "outputDirectory": "dist",
       "installCommand": "npm install"
     }
   },
   "rewrites": [
-    { "source": "/api/auth/(.*)", "destination": { "service": "backend" } },
-    { "source": "/api/flights(.*)", "destination": { "service": "backend" } },
-    { "source": "/api/cron/emails", "destination": { "service": "backgroundservice" } },
-    { "source": "/(.*)", "destination": { "service": "airport-frontend" } }
+    { "source": "/api/auth/(.*)",     "destination": { "service": "api" } },
+    { "source": "/api/flights(.*)",   "destination": { "service": "api" } },
+    { "source": "/api/cron/(.*)",     "destination": { "service": "api" } },
+    { "source": "/api/health",        "destination": { "service": "api" } },
+    { "source": "/(.*)",              "destination": { "service": "web" } }
   ],
   "crons": [
     { "path": "/api/cron/emails", "schedule": "*/10 * * * *" }

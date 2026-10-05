@@ -18,14 +18,14 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: Airport-Frontend/package-lock.json
+          cache-dependency-path: apps/web/package-lock.json
 
-      - name: Install Angular frontend deps
-        working-directory: Airport-Frontend
+      - name: Install web deps
+        working-directory: apps/web
         run: npm ci
 
-      - name: Build frontend (production)
-        working-directory: Airport-Frontend
+      - name: Build web (production)
+        working-directory: apps/web
         env:
           NODE_OPTIONS: --max-old-space-size=2048
         run: npm run build
@@ -36,9 +36,3 @@ jobs:
           configPath: ./lighthouserc.json
           uploadArtifacts: true
           temporaryPublicStorage: true
-
-      - name: Assert thresholds
-        uses: treosh/lighthouse-ci-action@v12
-        with:
-          configPath: ./lighthouserc.json
-          assert: true

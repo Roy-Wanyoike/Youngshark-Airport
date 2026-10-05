@@ -19,7 +19,7 @@ const commonEngine = new CommonEngine();
 app.get('/api/health', (_req, res) => {
   res.json({
     ok: true,
-    service: 'airport-frontend',
+    service: 'web',
     ts: Date.now(),
     backendUrl: process.env['BACKEND_URL'] ? 'configured' : 'unset',
   });
@@ -27,10 +27,13 @@ app.get('/api/health', (_req, res) => {
 
 /**
  * Serve static files from /browser (JS, CSS, images, fonts).
- * `maxAge: 1y` because Angular's output hash makes files immutable.
+ * `maxAge: '1y'` because Angular's output hash makes files immutable.
+ *
+ * Uses `*` (matches everything including `/`) instead of `**` —
+ * Express 5's `**` semantics changed and no longer match the root path,
+ * which caused the original "Cannot GET /" 404.
  */
-app.get(
-  '**',
+app.use(
   express.static(browserDistFolder, {
     maxAge: '1y',
     index: 'index.html',
@@ -46,7 +49,7 @@ app.get(
  * HTTP calls to bypass the public edge — but for the common case the SPA's
  * relative `/api/*` calls work via Vercel's top-level rewrites.
  */
-app.get('**', (req, res, next) => {
+app.get('*', (req, res, next) => {
   const { protocol, originalUrl, baseUrl, headers } = req;
 
   commonEngine
