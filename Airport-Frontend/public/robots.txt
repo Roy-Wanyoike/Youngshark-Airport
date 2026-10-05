@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /book
+Disallow: /book/
+
+Sitemap: https://youngshark-airport.example.com/sitemap.xml

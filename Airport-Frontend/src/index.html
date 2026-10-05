@@ -1,13 +1,59 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Airport</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-</head>
-<body>
-  <app-root></app-root>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>Youngshark Airport — Direct flights to your destination</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0ea5e9" />
+    <meta name="color-scheme" content="light dark" />
+
+    <meta
+      name="description"
+      content="Book direct flights with Youngshark Airport. We offer the best customer service from booking until you arrive at your destination."
+    />
+    <meta name="keywords" content="flights, airline, airport, booking, travel, Youngshark" />
+    <meta name="author" content="Youngshark Airport" />
+    <link rel="canonical" href="https://youngshark-airport.example.com/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Youngshark Airport — Direct flights to your destination" />
+    <meta
+      property="og:description"
+      content="Book direct flights with Youngshark Airport. Best customer service from booking to arrival."
+    />
+    <meta property="og:image" content="/assets/images/hero-airport.jpg" />
+    <meta property="og:url" content="https://youngshark-airport.example.com/" />
+    <meta property="og:site_name" content="Youngshark Airport" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Youngshark Airport — Direct flights" />
+    <meta
+      name="twitter:description"
+      content="Book direct flights with Youngshark Airport."
+    />
+    <meta name="twitter:image" content="/assets/images/hero-airport.jpg" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/assets/images/logo.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- Preconnect to backend -->
+    <link rel="preconnect" href="http://localhost:4000" crossorigin />
+
+    <!-- Self-hosted Inter (system-ui fallback if missing) -->
+    <link rel="preconnect" href="https://rsms.me" crossorigin />
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <app-root>
+      <!-- SSR / first-paint fallback -->
+      <div style="min-height:100vh;display:grid;place-items:center;font-family:system-ui,sans-serif;color:#475569">
+        Loading Youngshark Airport…
+      </div>
+    </app-root>
+  </body>
 </html>

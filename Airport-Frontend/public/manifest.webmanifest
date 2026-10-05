@@ -1,0 +1,12 @@
+{
+  "name": "Youngshark Airport",
+  "short_name": "Youngshark",
+  "description": "Direct flights to your destination",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0ea5e9",
+  "icons": [
+    { "src": "/assets/images/logo.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
