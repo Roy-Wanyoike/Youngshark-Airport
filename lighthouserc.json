@@ -20,7 +20,7 @@
         "http://localhost:4200/book",
         "http://localhost:4200/this-route-does-not-exist"
       ],
-      "startServerCommand": "cd Airport-Frontend && NODE_OPTIONS=--max-old-space-size=2048 npm start -- --port 4200 --host 0.0.0.0",
+      "startServerCommand": "cd apps/web && NODE_OPTIONS=--max-old-space-size=2048 npm start -- --port 4200 --host 0.0.0.0",
       "startServerReadyPattern": "Local:|Live Development Server|listening on",
       "startServerReadyTimeout": 90000,
       "numberOfRuns": 1,

@@ -1,94 +1,107 @@
 # Youngshark Airport
 
-Multi-service web application: an Angular 19 frontend (with SSR), an Express
-backend backed by SQL Server, and a cron-triggered email service — all deployed
-to Vercel as a single project using [Vercel Services](https://vercel.com/docs/services).
+A modernised flight-booking application deployed on **Vercel** as a single
+project with two services:
+
+- **`web`** — Angular 19 frontend (SSR-enabled, modern UI/UX from PR #19)
+- **`api`** — Consolidated Express API (auth + flights CRUD + cron emailer)
 
 ## Repository layout
 
 ```
 .
-├── vercel.json                              # Service + binding + rewrite definitions
-├── lighthouserc.json                        # Lighthouse CI thresholds
-├── .github/workflows/
-│   ├── build.yml                            # Build verification for all services
-│   └── lighthouse.yml                       # Lighthouse CI on PRs
-├── Airport-Frontend/                        # Modernized Angular 19 frontend (SSR enabled)
-└── Backend_Development-master/
-    ├── Airport/                             # Legacy Angular 15 SPA (kept for reference)
-    ├── Airport-ssr/                         # Legacy Angular 15 SSR (kept for reference)
-    ├── backend/                             # Express + SQL Server API
-    └── BackgroundService/                   # Cron-triggered email service
+├── apps/
+│   ├── web/                  # Angular 19 frontend (SSR via @angular/ssr)
+│   │   ├── src/
+│   │   │   ├── app/          # Components, services, state (NgRx)
+│   │   │   ├── server.ts     # SSR Express entrypoint
+│   │   │   └── ...
+│   │   ├── angular.json
+│   │   └── package.json
+│   └── api/                  # Consolidated Express API
+│       ├── src/
+│       │   ├── config/        # Environment config
+│       │   ├── schemas/       # Joi validators
+│       │   ├── middleware/     # verifyToken
+│       │   ├── services/       # db, jwt, email (cron)
+│       │   ├── controllers/    # auth, flights, cron
+│       │   ├── routes/         # auth, flights, cron
+│       │   ├── templates/      # EJS email templates
+│       │   ├── types/          # Shared TypeScript interfaces
+│       │   └── server.ts       # Express entrypoint
+│       ├── db/                # SQL DDL + stored procedures
+│       │   ├── tables/
+│       │   └── stored-procedures/{user,booking}/
+│       └── package.json
+├── archive/
+│   └── legacy-frontend-variants/   # Original Angular 15 SPA + SSR (not deployed)
+├── vercel.json              # Service + binding + rewrite definitions
+├── lighthouserc.json        # Lighthouse CI thresholds
+└── .github/workflows/        # CI: build + Lighthouse
 ```
 
-## Services (Vercel)
+## Vercel services
 
-| Service            | Root                                  | Framework | Public? | Bindings                |
-|--------------------|---------------------------------------|-----------|---------|-------------------------|
-| `airport-frontend` | `Airport-Frontend`                    | angular   | yes `/` | → `backend` (`BACKEND_URL`) |
-| `airport`          | `Backend_Development-master/Airport`  | angular   | no      | → `backend` (`BACKEND_URL`) |
-| `airport-ssr`      | `Backend_Development-master/Airport-ssr` | angular | no      | → `backend` (`BACKEND_URL`) |
-| `backend`          | `Backend_Development-master/backend`  | express   | yes `/api/auth/*`, `/api/flights*` | — |
-| `backgroundservice` | `Backend_Development-master/BackgroundService` | express | yes `/api/cron/emails` (cron only) | — |
-
-### Public routing
-
-| Path                  | Service             | Notes                                   |
-|-----------------------|---------------------|-----------------------------------------|
-| `/api/auth/*`         | `backend`           | Auth endpoints (register, login)       |
-| `/api/flights*`       | `backend`           | Booking CRUD                            |
-| `/api/cron/emails`    | `backgroundservice` | Invoked by Vercel Cron every 10 minutes |
-| `/api/health`         | `backend` or `airport-frontend` | Health probe                 |
-| `/*` (everything else) | `airport-frontend` | SSR-rendered Angular app                |
+| Service | Root       | Framework | Public route                                      | Bindings                  |
+|---------|------------|-----------|---------------------------------------------------|---------------------------|
+| `web`   | `apps/web` | angular   | `/*` (catch-all)                                  | → `api` (`BACKEND_URL`)   |
+| `api`   | `apps/api` | express   | `/api/auth/*`, `/api/flights*`, `/api/cron/*`, `/api/health` | — |
 
 ### Bindings
 
 ```text
-airport-frontend ──BACKEND_URL──> backend
-airport          ──BACKEND_URL──> backend
-airport-ssr      ──BACKEND_URL──> backend
+web  ──[BACKEND_URL]──>  api
 ```
 
-The backend service is **publicly reachable** via `/api/*` rewrites, and also
-**internally reachable** from the three Angular services via the `BACKEND_URL`
-env var that Vercel injects.
+### Public routing
+
+| Path                  | Service | Notes                                       |
+|-----------------------|---------|---------------------------------------------|
+| `/api/auth/*`         | `api`   | `POST /register`, `POST /login`, `GET /home`|
+| `/api/flights*`       | `api`   | Booking CRUD (token-authenticated)         |
+| `/api/cron/emails`    | `api`   | Invoked by Vercel Cron every 10 minutes    |
+| `/api/health`         | `api`   | Health probe (also served by `web`)         |
+| `/*` (everything else)| `web`   | SSR-rendered Angular app                    |
+
+### Vercel Cron
+
+```json
+"crons": [
+  { "path": "/api/cron/emails", "schedule": "*/10 * * * *" }
+]
+```
+
+The original `BackgroundService` used `node-cron` (every 10 seconds) — that
+doesn't fit Vercel's request-scoped functions. The endpoint is now an HTTP
+handler invoked by Vercel Cron every 10 minutes.
 
 ## Local development
 
-### Frontend (Angular 19 with SSR)
+### Web (Angular 19 with SSR)
 
 ```bash
-cd Airport-Frontend
+cd apps/web
 npm install
-npm start        # serves on http://localhost:4200 (HMR)
+npm start          # serves on http://localhost:4200 (HMR + SSR)
 ```
 
-For SSR dev:
-```bash
-npm run dev:ssr
-```
-
-### Backend (Express + SQL Server)
+### API (Express + SQL Server + cron emailer)
 
 ```bash
-cd Backend_Development-master/backend
-cp .env.example .env       # fill in DB credentials
-npm install
-npm run build              # compiles TypeScript → dist/
-npm start                  # runs nodemon + tsc -w on :4002
-```
-
-### Background service
-
-```bash
-cd Backend_Development-master/BackgroundService
+cd apps/api
 cp .env.example .env       # fill in DB + SMTP credentials
 npm install
-npm run build
-npm start                  # serves on :4002, exposes POST /api/cron/emails
+npm run dev                # tsx watch on :4002 (HMR)
+# or: npm run build && npm start
 ```
 
-To trigger an email sweep locally:
+Verify the API:
+```bash
+curl http://localhost:4002/api/health
+# {"ok":true,"service":"api","ts":...,"db":"connected"}
+```
+
+Trigger an email sweep manually:
 ```bash
 curl -X POST http://localhost:4002/api/cron/emails
 ```
@@ -98,45 +111,42 @@ curl -X POST http://localhost:4002/api/cron/emails
 ### 1. Prerequisites
 
 - A Vercel account
-- A SQL Server database reachable from Vercel (Azure SQL recommended —
-  the docker-compose `mcr.microsoft.com/mssql/server` image only works locally)
+- A SQL Server database reachable from Vercel (Azure SQL recommended — the
+  docker-compose `mcr.microsoft.com/mssql/server` image only works locally)
 - (Optional) An SMTP account (Gmail with an app password works)
 
 ### 2. Import the repo
 
+Vercel reads `vercel.json` and auto-configures both services. Either:
+
 ```bash
-# From the repo root, after pushing to GitHub:
 npx vercel link
-npx vercel --prebuilt=false  # Vercel auto-detects services from vercel.json
+npx vercel --prod
 ```
 
-Or via the Vercel dashboard: "New Project" → import the GitHub repo → Vercel
-reads `vercel.json` and configures all 5 services automatically.
+Or via the Vercel dashboard: "New Project" → import the GitHub repo.
 
 ### 3. Set environment variables
 
 Set these in **Vercel → Project Settings → Environment Variables** (or via
-`vercel env`):
+`vercel env`). The `api` service needs the DB + SMTP + JWT variables; the
+`web` service only needs the `BACKEND_URL` binding (auto-injected).
 
-#### `backend` + `backgroundservice` (both need DB access)
-
-| Variable       | Example                              | Description                       |
-|----------------|--------------------------------------|-----------------------------------|
-| `DB_HOST`      | `myapp-sql.database.windows.net`     | SQL Server hostname               |
-| `DB_PORT`      | `1433`                               | SQL Server port                   |
-| `DB_USER`      | `youngshark_admin`                   | SQL auth username                 |
-| `DB_PWD`       | `••••••••••`                         | SQL auth password                 |
-| `DB_NAME`      | `AirportDB`                          | Database name                     |
-| `DB_ENCRYPT`   | `true`                               | `true` for Azure SQL (TLS)        |
-| `DB_TRUST`     | `false`                              | `true` for local self-signed certs|
-| `SECRETKEY`    | `long-random-string`                 | JWT signing secret (backend only) |
-
-#### `backgroundservice` only
-
-| Variable   | Example              | Description                |
-|------------|----------------------|----------------------------|
-| `EMAIL`    | `you@gmail.com`      | SMTP username              |
-| `PASSWORD` | `gmail-app-password` | SMTP password (app password) |
+| Variable        | Example                              | Service | Description                       |
+|-----------------|--------------------------------------|---------|-----------------------------------|
+| `DB_HOST`       | `myapp-sql.database.windows.net`     | `api`   | SQL Server hostname               |
+| `DB_PORT`       | `1433`                               | `api`   | SQL Server port                   |
+| `DB_USER`       | `youngshark_admin`                   | `api`   | SQL auth username                 |
+| `DB_PWD`        | `••••••••••`                         | `api`   | SQL auth password                 |
+| `DB_NAME`       | `AirportDB`                          | `api`   | Database name                     |
+| `DB_ENCRYPT`    | `true`                               | `api`   | `true` for Azure SQL (TLS)        |
+| `DB_TRUST`      | `false`                              | `api`   | `true` for local self-signed certs|
+| `JWT_SECRET`    | `long-random-string`                 | `api`   | JWT signing secret                |
+| `SMTP_HOST`     | `smtp.gmail.com`                     | `api`   | SMTP server                       |
+| `SMTP_PORT`     | `587`                                | `api`   | SMTP port                         |
+| `SMTP_USER`     | `you@gmail.com`                      | `api`   | SMTP username                     |
+| `SMTP_PASS`     | `gmail-app-password`                 | `api`   | SMTP password (app password)      |
+| `SMTP_FROM`     | `you@gmail.com`                      | `api`   | From address                      |
 
 ### 4. Deploy
 
@@ -144,21 +154,17 @@ Set these in **Vercel → Project Settings → Environment Variables** (or via
 vercel --prod
 ```
 
-Vercel builds each service independently per `vercel.json`, provisions the
-bindings, and sets up the rewrites + cron. Your project is live at
-`https://<your-project>.vercel.app`.
-
 ### 5. Verify
 
 ```bash
 # Health checks
-curl https://<your-project>.vercel.app/api/health        # backend
-curl https://<your-project>.vercel.app/                  # SSR HTML
+curl https://<your-project>.vercel.app/api/health
+curl https://<your-project>.vercel.app/
 
 # Auth flow
 curl -X POST https://<your-project>.vercel.app/api/auth/register \
   -H 'Content-Type: application/json' \
-  -d '{"Name":"Test","Email":"t@example.com","Password":"Test!1234"}'
+  -d '{"Name":"Test","Email":"t@example.com","Password":"Test!1234","ConfirmPassword":"Test!1234"}'
 ```
 
 ## Lighthouse CI
@@ -168,26 +174,53 @@ curl -X POST https://<your-project>.vercel.app/api/auth/register \
 | Category        | Threshold | Severity |
 |-----------------|-----------|----------|
 | Performance     | ≥ 0.85    | warn    |
-| Accessibility   | ≥ 0.95    | error   |
+| **Accessibility** | **≥ 0.95** | **error** |
 | Best Practices  | ≥ 0.90    | warn    |
 | SEO             | ≥ 0.90    | warn    |
 
-The action runs on every PR to `main`. Lighthouse reports are uploaded to
-temporary public storage for review.
+## Backend architecture
+
+The API follows a clean layered architecture:
+
+```text
+src/server.ts                  # Express entry — mounts routes, starts server
+src/routes/                    # Route definitions (auth, flights, cron)
+  └── *.routes.ts
+src/controllers/               # Request handlers — orchestrate services, format responses
+  └── *.controller.ts
+src/middleware/                # Express middleware (verifyToken)
+  └── auth.ts
+src/services/                  # Business logic + I/O (db, jwt, email)
+  ├── db.ts                     # mssql connection pool + exec/query helpers
+  ├── jwt.ts                    # sign/verify
+  └── email.ts                  # Cron-triggered welcome email sweep
+src/schemas/                   # Joi validation schemas
+src/config/                    # Environment-driven config
+src/types/                      # Shared TypeScript interfaces
+src/templates/                 # EJS email templates
+```
+
+**Why this structure?**
+
+- **Single responsibility** — each file does one thing (routes define HTTP
+  shape, controllers orchestrate, services do I/O, schemas validate).
+- **Testable** — services are pure functions of their inputs, controllers are
+  thin wrappers, routes are declarative.
+- **Backend contract preserved** — every endpoint, the `token` header, and
+  every response shape matches the original `backend/` package exactly.
+- **Cron consolidated** — the `BackgroundService` is now a route on the same
+  API server (`POST /api/cron/emails`), not a separate deployable.
 
 ## Notes & limitations
 
 - **Vercel Cron free tier**: 1 cron job per project on the Hobby plan. We use
   one (`*/10 * * * *` → `/api/cron/emails`).
-- **SQL Server on Vercel**: Vercel functions can connect to external SQL Server
-  instances (Azure SQL recommended). The `mssql` package uses TCP which works
-  fine from Vercel's Node.js runtime.
+- **SQL Server on Vercel**: Vercel functions connect to external SQL Server
+  via TCP. Azure SQL is recommended.
 - **SSR + NgRx**: The booking list's `getBookings` effect fires on the server
-  during SSR. Without a valid token, it will 401 — the loading skeleton
-  renders, then the client hydrates and re-fetches with the user's token.
-  Future improvement: use TransferState to cache the SSR response.
-- **Legacy `Airport` and `Airport-ssr`**: These are the original Angular 15
-  frontend variants. They're wired as internal services (no public rewrites)
-  so you can deploy them experimentally without exposing them publicly. To
-  switch the public frontend to one of them, change the catch-all rewrite in
-  `vercel.json` from `airport-frontend` to the desired service.
+  during SSR. Without a valid token, it 401s — the loading skeleton renders,
+  then the client hydrates and re-fetches with the user's token.
+- **Archive**: The original Angular 15 SPA (`Airport/`) and Angular 15 SSR
+  (`Airport-ssr/`) are preserved under `archive/legacy-frontend-variants/`
+  for historical reference but are **not deployed**. The modernized Angular 19
+  frontend in `apps/web/` is the only frontend service.
