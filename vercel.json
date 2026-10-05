@@ -3,31 +3,69 @@
   "services": {
     "airport-frontend": {
       "root": "Airport-Frontend",
-      "framework": "angular"
+      "framework": "angular",
+      "buildCommand": "npm run build",
+      "outputDirectory": "dist/airport",
+      "installCommand": "npm install",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "backend",
+          "format": "url",
+          "env": "BACKEND_URL"
+        }
+      ]
     },
     "airport": {
       "root": "Backend_Development-master/Airport",
-      "framework": "angular"
+      "framework": "angular",
+      "buildCommand": "npm run build",
+      "outputDirectory": "dist/airport",
+      "installCommand": "npm install",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "backend",
+          "format": "url",
+          "env": "BACKEND_URL"
+        }
+      ]
     },
     "airport-ssr": {
       "root": "Backend_Development-master/Airport-ssr",
-      "framework": "angular"
+      "framework": "angular",
+      "buildCommand": "npm run build:ssr",
+      "outputDirectory": "dist/Airport",
+      "installCommand": "npm install",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "backend",
+          "format": "url",
+          "env": "BACKEND_URL"
+        }
+      ]
     },
     "backend": {
       "root": "Backend_Development-master/backend",
-      "framework": "express"
+      "buildCommand": "npm run build:vercel",
+      "outputDirectory": "dist",
+      "installCommand": "npm install"
     },
     "backgroundservice": {
       "root": "Backend_Development-master/BackgroundService",
-      "framework": "express"
+      "buildCommand": "npm run build:vercel",
+      "outputDirectory": "dist",
+      "installCommand": "npm install"
     }
   },
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": {
-        "service": "backend"
-      }
-    }
+    { "source": "/api/auth/(.*)", "destination": { "service": "backend" } },
+    { "source": "/api/flights(.*)", "destination": { "service": "backend" } },
+    { "source": "/api/cron/emails", "destination": { "service": "backgroundservice" } },
+    { "source": "/(.*)", "destination": { "service": "airport-frontend" } }
+  ],
+  "crons": [
+    { "path": "/api/cron/emails", "schedule": "*/10 * * * *" }
   ]
 }
