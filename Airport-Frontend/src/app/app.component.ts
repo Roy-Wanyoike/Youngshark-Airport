@@ -1,12 +1,21 @@
-import { Component } from '@angular/core';
-import { AuthService } from './Services/auth.service';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { HeaderComponent } from './header/header.component';
+import { FooterComponent } from './footer/footer.component';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  standalone: true,
+  imports: [RouterOutlet, HeaderComponent, FooterComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <div class="app-shell">
+      <app-header />
+      <main id="main-content" class="app-main" tabindex="-1">
+        <router-outlet />
+      </main>
+      <app-footer />
+    </div>
+  `,
 })
-export class AppComponent {
-  title = 'Airport';
-  constructor(public auth:AuthService){}
-}
+export class AppComponent {}

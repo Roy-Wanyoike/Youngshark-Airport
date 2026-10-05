@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <rect width="400" height="300" fill="#F8FAFC"/>
+  <circle cx="200" cy="150" r="100" fill="#E0F2FE"/>
+  <path d="M100 170 C 120 130 160 120 220 130 C 270 138 300 150 320 158 C 320 162 316 166 312 166 L 304 166 L 296 172 L 288 168 L 250 172 L 200 184 L 150 188 L 110 184 C 100 182 95 178 100 170 Z" fill="#0EA5E9"/>
+  <path d="M296 172 L 288 168 L 320 158 Z" fill="#0369A1"/>
+  <circle cx="312" cy="156" r="1.5" fill="#0F172A"/>
+  <text x="200" y="240" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="700" fill="#0F172A">404</text>
+  <text x="200" y="265" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="14" fill="#64748B">Page not found</text>
+</svg>
