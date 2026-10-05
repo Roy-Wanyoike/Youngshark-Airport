@@ -1,11 +1,14 @@
 {
-  "name": "endpoint-_withdb",
+  "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Youngshark Airport backend API — Express + SQL Server",
   "scripts": {
     "start:build": "tsc -w",
     "start:run": "nodemon dist/server.js",
-    "start": "concurrently npm:start:*"
+    "start": "concurrently npm:start:*",
+    "build": "tsc",
+    "build:vercel": "tsc",
+    "vercel-start": "node dist/server.js"
   },
   "keywords": [],
   "author": "",
