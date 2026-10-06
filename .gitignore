@@ -3,11 +3,7 @@ dist/
 .angular/
 .env
 .env.local
-.env.*.local
 *.log
 npm-debug.log*
-.vscode/
-.idea/
-*.swp
 .DS_Store
 Thumbs.db
