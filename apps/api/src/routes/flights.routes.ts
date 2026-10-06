@@ -6,8 +6,8 @@ import {
   addBooking,
   updateBooking,
   cancelBooking,
-} from '../controllers/flights.controller.js';
-import { verifyTokenMiddleware } from '../middleware/auth.js';
+} from '../controllers/flights.controller';
+import { verifyTokenMiddleware } from '../middleware/auth';
 
 const flightsRouter = Router();
 

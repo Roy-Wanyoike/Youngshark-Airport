@@ -13,3 +13,12 @@ dist/
 # Logs
 *.log
 npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

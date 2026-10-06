@@ -1,12 +1,10 @@
-import { config } from '../config/index.js';
+import { config } from '../config/index';
 import nodemailer from 'nodemailer';
 import ejs from 'ejs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { db } from './db.js';
+import { db } from './db';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
+// __dirname is available in CommonJS.
 export interface EmailSummary {
   scanned: number;
   sent: number;
@@ -42,6 +40,8 @@ export async function sendWelcomeEmails(): Promise<EmailSummary> {
     auth: { user: config.smtp.user, pass: config.smtp.pass },
   });
 
+  // Templates are copied to dist/templates/ during build (see package.json build script).
+  // __dirname is apps/api/dist/services/ → ../templates/ → apps/api/dist/templates/
   const templatePath = path.resolve(__dirname, '../templates/registration.ejs');
 
   for (const user of users) {

@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-import { config } from '../config/index.js';
-import type { PublicUser } from '../types/index.js';
+import { config } from '../config/index';
+import type { PublicUser } from '../types/index';
 
 /**
  * JWT helpers — single source of truth for sign + verify.

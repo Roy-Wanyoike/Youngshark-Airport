@@ -1,26 +1,9 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "services": {
-    "web": {
-      "root": "apps/web",
-      "framework": "angular",
-      "buildCommand": "npm run build",
-      "outputDirectory": "dist/airport/browser",
-      "installCommand": "npm install"
-    },
-    "api": {
-      "root": "apps/api",
-      "buildCommand": "npm run build:vercel",
-      "outputDirectory": "dist",
-      "installCommand": "npm install"
-    }
-  },
+  "buildCommand": "npm run build",
+  "outputDirectory": "apps/web/dist/airport/browser",
   "rewrites": [
-    { "source": "/api/auth/(.*)",     "destination": { "service": "api" } },
-    { "source": "/api/flights(.*)",   "destination": { "service": "api" } },
-    { "source": "/api/cron/(.*)",     "destination": { "service": "api" } },
-    { "source": "/api/health",        "destination": { "service": "api" } },
-    { "source": "/(.*)",              "destination": { "service": "web" } }
+    { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "crons": [
     { "path": "/api/cron/emails", "schedule": "*/10 * * * *" }
