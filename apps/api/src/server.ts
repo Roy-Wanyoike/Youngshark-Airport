@@ -29,12 +29,9 @@ app.use(`${config.apiPrefix}/*`, (_req, res) => {
   res.status(404).json({ error: 'Not found' });
 });
 
-// Only listen when run directly (not when imported as a Vercel serverless function)
-if (require.main === module) {
-  const port = config.port;
-  app.listen(port, () => {
-    console.log(`[api] listening on :${port}`);
-  });
-}
+const port = config.port;
+app.listen(port, () => {
+  console.log(`[api] listening on :${port}`);
+});
 
 export default app;
