@@ -6,15 +6,7 @@
       "framework": "angular",
       "buildCommand": "npm run build",
       "outputDirectory": "dist/airport/browser",
-      "installCommand": "npm install",
-      "bindings": [
-        {
-          "type": "service",
-          "service": "api",
-          "format": "url",
-          "env": "BACKEND_URL"
-        }
-      ]
+      "installCommand": "npm install"
     },
     "api": {
       "root": "apps/api",
@@ -27,8 +19,7 @@
     { "source": "/api/auth/(.*)",     "destination": { "service": "api" } },
     { "source": "/api/flights(.*)",   "destination": { "service": "api" } },
     { "source": "/api/cron/(.*)",     "destination": { "service": "api" } },
-    { "source": "/api/health",        "destination": { "service": "api" } },
-    { "source": "/(.*)",              "destination": { "service": "web" } }
+    { "source": "/api/health",        "destination": { "service": "api" } }
   ],
   "crons": [
     { "path": "/api/cron/emails", "schedule": "*/10 * * * *" }
