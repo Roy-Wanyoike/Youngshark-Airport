@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
-import { verifyToken } from '../services/jwt.js';
-import type { DecodedToken } from '../types/index.js';
+import { verifyToken } from '../services/jwt';
+import type { DecodedToken } from '../types/index';
 
 /**
  * Authentication middleware.

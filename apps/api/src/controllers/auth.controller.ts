@@ -1,10 +1,10 @@
 import type { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
-import { db } from '../services/db.js';
-import { signToken } from '../services/jwt.js';
-import { registrationSchema, loginSchema } from '../schemas/index.js';
-import type { AuthedRequest } from '../middleware/auth.js';
+import { db } from '../services/db';
+import { signToken } from '../services/jwt';
+import { registrationSchema, loginSchema } from '../schemas/index';
+import type { AuthedRequest } from '../middleware/auth';
 
 /**
  * Auth controller — registration + login.

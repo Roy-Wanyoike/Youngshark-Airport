@@ -1,6 +1,6 @@
 import type { Response } from 'express';
-import { sendWelcomeEmails } from '../services/email.js';
-import type { AuthedRequest } from '../middleware/auth.js';
+import { sendWelcomeEmails } from '../services/email';
+import type { AuthedRequest } from '../middleware/auth';
 
 /**
  * Cron controller — invoked by Vercel Cron (or any external scheduler).

@@ -1,10 +1,8 @@
 import dotenv from 'dotenv';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Load .env from the api package root (apps/api/.env).
+// __dirname is available in CommonJS (which is what this compiles to).
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 /**

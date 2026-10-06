@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { sendWelcomeEmailsCron } from '../controllers/cron.controller.js';
+import { sendWelcomeEmailsCron } from '../controllers/cron.controller';
 
 const cronRouter = Router();
 

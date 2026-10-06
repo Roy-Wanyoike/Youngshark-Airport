@@ -1,8 +1,8 @@
 import type { Response } from 'express';
 import { v4 as uuid } from 'uuid';
-import { db } from '../services/db.js';
-import { addBookingSchema, updateBookingSchema } from '../schemas/index.js';
-import type { AuthedRequest } from '../middleware/auth.js';
+import { db } from '../services/db';
+import { addBookingSchema, updateBookingSchema } from '../schemas/index';
+import type { AuthedRequest } from '../middleware/auth';
 
 /**
  * Flight booking controller — CRUD against the FlightBookings table via
