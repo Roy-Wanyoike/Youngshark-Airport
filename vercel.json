@@ -19,7 +19,8 @@
     { "source": "/api/auth/(.*)",     "destination": { "service": "api" } },
     { "source": "/api/flights(.*)",   "destination": { "service": "api" } },
     { "source": "/api/cron/(.*)",     "destination": { "service": "api" } },
-    { "source": "/api/health",        "destination": { "service": "api" } }
+    { "source": "/api/health",        "destination": { "service": "api" } },
+    { "source": "/(.*)",              "destination": { "service": "web" } }
   ],
   "crons": [
     { "path": "/api/cron/emails", "schedule": "*/10 * * * *" }
